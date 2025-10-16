@@ -1,0 +1,146 @@
+{
+  "1": {
+    "name": "Отель Konstantin Plaza",
+    "lat": 39.68228911019937,
+    "lon": 66.92676841349524,
+    "description": "1"
+  },
+  "2": {
+    "name": "Registon Hotel Samarkand (Zebo)",
+    "lat": 39.656268177110306,
+    "lon": 66.95602054812595,
+    "description": "2"
+  },
+  "3": {
+    "name": "Registon old tomon stoyankasi",
+    "lat": 39.65392905355857,
+    "lon": 66.97964259561881,
+    "description": "3"
+  },
+  "4": {
+    "name": "Medina Hotel",
+    "lat": 39.6649349854754,
+    "lon": 66.97104477540607,
+    "description": "4"
+  },
+  "5": {
+    "name": "Zilol Baxt Hotel",
+    "lat": 39.64196877194334,
+    "lon": 66.95743409092019,
+    "description": "5"
+  },
+  "6": {
+    "name": "Movenpick Hotel",
+    "lat": 39.64983964294949,
+    "lon": 66.96310886684154,
+    "description": "6"
+  },
+  "7": {
+    "name": "Arba Hotel",
+    "lat": 39.64610843999471,
+    "lon": 66.9564211548755,
+    "description": "7"
+  },
+  "8": {
+    "name": "Dilimhan Premium Hotel",
+    "lat": 39.66244361298692,
+    "lon": 66.93420249991742,
+    "description": "8"
+  },
+  "9": {
+    "name": "Hilton Garden Inn Hotel",
+    "lat": 39.67349467777078,
+    "lon": 66.96694895133272,
+    "description": "9"
+  },
+  "10": {
+    "name": "Hayat Samarkand Hotel",
+    "lat": 39.67582,
+    "lon": 66.974628,
+    "description": "10"
+  },
+  "11": {
+    "name": "Volidam Hotel",
+    "lat": 39.63751848290447,
+    "lon": 66.97042728611785,
+    "description": "11"
+  },
+  "12": {
+    "name": "Arhan Palace Premium Hotel",
+    "lat": 39.65091024468731,
+    "lon": 66.94471117165592,
+    "description": "12"
+  },
+  "13": {
+    "name": "Gala Osiyo Hotel",
+    "lat": 39.67667614952344,
+    "lon": 67.00743153549305,
+    "description": "13"
+  },
+  "14": {
+    "name": "Kohinur Plaza & Spa",
+    "lat": 39.6663353480749,
+    "lon": 66.97598928140594,
+    "description": "14"
+  },
+  "15": {
+    "name": "Atlas Stoyankasi",
+    "lat": 39.64669646051617,
+    "lon": 66.92424767089933,
+    "description": "15"
+  },
+  "16": {
+    "name": "Khan Hotel",
+    "lat": 39.661207227100114,
+    "lon": 66.98732957015609,
+    "description": "16"
+  },
+  "17": {
+    "name": "Euro Azia hotel",
+    "lat": 39.67947921939805,
+    "lon": 66.94069691971764,
+    "description": "17"
+  },
+  "18": {
+    "name": "Bogishamol Hotel",
+    "lat": 39.665606647184696,
+    "lon": 66.9976259107767,
+    "description": "18"
+  },
+  "19": {
+    "name": "Sharq Hotel",
+    "lat": 39.66717665393823,
+    "lon": 66.9271496358649,
+    "description": "19"
+  },
+  "20": {
+    "name": "Royal Palace Hotel",
+    "lat": 39.65180819640101,
+    "lon": 66.95307517584979,
+    "description": "20"
+  },
+  "21": {
+    "name": "Diyora Hotel",
+    "lat": 39.65850263326056,
+    "lon": 66.97097595537997,
+    "description": "21"
+  },
+  "22": {
+    "name": "Registon orqa tomon stoyankasi",
+    "lat": 39.65683801640633,
+    "lon": 66.97627241613272,
+    "description": "22"
+  },
+  "23": {
+    "name": "Shahzoda Elite Hotel",
+    "lat": 39.646149123315894,
+    "lon": 66.95161897830084,
+    "description": "23"
+  },
+  "24": {
+    "name": "Jahon Palace Hotel",
+    "lat": 39.65697294761305,
+    "lon": 66.9361854698481,
+    "description": "24"
+  }
+}
