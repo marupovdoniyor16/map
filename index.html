@@ -325,7 +325,7 @@ button:active {
 
 <body>
   <div id="map"></div>
-  <div id="info">⏳ Ожидание маршрута...</div>
+  <div id="info" class="info">⏳ Ожидание маршрута...</div>
   <div id="nav-panel">
   🚗 <span id="nav-instruction">Навигация не активна</span><br>
   📏 <span id="nav-distance">–</span> | ⏱️ <span id="nav-time">–</span>
@@ -344,7 +344,7 @@ button:active {
 
   <!-- Авторизация -->
   <!-- Форма авторизации -->
-  <div id="login-container">
+  <div id="login-container" class="login-container">
     <h4>Вход администратора</h4>
     <input type="email" id="email" placeholder="Email" style="width:150px; margin-bottom:5px;"><br>
     <input type="password" id="password" placeholder="Пароль" style="width:150px; margin-bottom:5px;"><br>
@@ -694,6 +694,15 @@ window.routeTo = (lat, lon) => {
     controlButtons.style.display = "none";
   }
 });
+
+if (window.innerWidth <= 767) {
+  const registerBtn = document.querySelector('.login-container');
+  const rotateInfo = document.querySelector('.info');
+
+  if (registerBtn) registerBtn.style.display = 'none';
+  if (rotateInfo) rotateInfo.style.display = 'none';
+}
+
 
 // 🛰️ Сразу при загрузке запрашиваем геолокацию
 startGeolocationTracking();
