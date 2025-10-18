@@ -532,6 +532,8 @@ window.routeTo = (lat, lon) => {
 
     logoutBtn.onclick = () => signOut(auth);
 
+    const controlButtons = document.querySelector('.control-buttons');
+    
     onAuthStateChanged(auth, (user) => {
   currentUser = user;
   if (user) {
@@ -540,12 +542,16 @@ window.routeTo = (lat, lon) => {
     document.getElementById("email").style.display = "none";
     document.getElementById("password").style.display = "none";
     statusEl.textContent = `Вы вошли как ${user.email}`;
+
+     controlButtons.style.display = "flex";
   } else {
     loginBtn.style.display = "inline-block";
     logoutBtn.style.display = "none";
     document.getElementById("email").style.display = "inline-block";
     document.getElementById("password").style.display = "inline-block";
     statusEl.textContent = "";
+
+    controlButtons.style.display = "none";
   }
 });
 
