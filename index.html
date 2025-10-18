@@ -595,8 +595,17 @@ window.routeTo = (lat, lon) => {
     document.getElementById("nav-time").textContent =
       Math.round(summary.totalTime / 60) + " мин";
 
+    var isMobile = window.innerWidth < 768;
+
+    if (isMobile) {
+    // Показываем только первую инструкцию поворота
     document.getElementById("nav-instruction").textContent =
       route.instructions?.[0]?.text || "Начинаем движение";
+    } else {
+    // Показываем полную инструкцию (можно заменить на другую логику)
+    document.getElementById("nav-instruction").textContent =
+      route.instructions?.[0]?.text || "Начинаем движение";
+    }
 
     // Отслеживание движения
     if (geoWatchId) navigator.geolocation.clearWatch(geoWatchId);
