@@ -275,7 +275,7 @@ button:active {
     width: 90vw;
     max-width: none;
     left: 50%;
-    bottom: 80px !important;
+    bottom: 8px !important;
     transform: translateX(-50%);
     padding: 12px 16px;
   }
@@ -698,9 +698,11 @@ window.routeTo = (lat, lon) => {
 if (window.innerWidth <= 767) {
   const registerBtn = document.querySelector('.login-container');
   const rotateInfo = document.querySelector('.info');
+  const navPanel = document.getElementById('nav-panel');
 
   if (registerBtn) registerBtn.style.display = 'none';
   if (rotateInfo) rotateInfo.style.display = 'none';
+  if (navPanel) navPanel.style.display = 'none'; 
 }
 
 
