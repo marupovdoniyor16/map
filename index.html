@@ -540,18 +540,18 @@ window.routeTo = (lat, lon) => {
     document.getElementById("email").style.display = "none";
     document.getElementById("password").style.display = "none";
     statusEl.textContent = `Вы вошли как ${user.email}`;
-
-    // 🛰️ Сразу спрашиваем геолокацию после входа
-    startGeolocationTracking();
   } else {
     loginBtn.style.display = "inline-block";
     logoutBtn.style.display = "none";
     document.getElementById("email").style.display = "inline-block";
     document.getElementById("password").style.display = "inline-block";
     statusEl.textContent = "";
-    stopGeolocationTracking();
   }
 });
+
+// 🛰️ Сразу при загрузке запрашиваем геолокацию
+startGeolocationTracking();
+
 
   </script>
 </body>
