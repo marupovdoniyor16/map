@@ -325,34 +325,31 @@ button:active {
 
 <body>
   <div id="map"></div>
-  <div id="info" class="info">⏳ Ожидание маршрута...</div>
+  <div id="info" class="info">⏳ Waiting for route...</div>
   <div id="nav-panel">
-  🚗 <span id="nav-instruction">Навигация не активна</span><br>
-  📏 <span id="nav-distance">–</span> | ⏱️ <span id="nav-time">–</span>
+    🚗 <span id="nav-instruction">Navigation inactive</span><br>
+    📏 <span id="nav-distance">–</span> | ⏱️ <span id="nav-time">–</span>
   </div>
 
-
   <div class="control-buttons">
-    <button id="addBtn">➕ Добавить отель</button>
-    <button id="delBtn">🗑 Удалить отель</button>
+    <button id="addBtn">➕ Add Hotel</button>
+    <button id="delBtn">🗑 Delete Hotel</button>
   </div>
 
   <div class="search-panel">
-    <input type="text" id="searchInput" placeholder="Поиск отеля..." style="padding: 5px;" />
-    <button id="searchBtn">🔍 Найти</button>
+    <input type="text" id="searchInput" placeholder="Search hotel..." style="padding: 5px;" />
+    <button id="searchBtn">🔍 Search</button>
   </div>
 
-  <!-- Авторизация -->
-  <!-- Форма авторизации -->
+  <!-- Admin Login -->
   <div id="login-container" class="login-container">
-    <h4>Вход администратора</h4>
+    <h4>Admin Login</h4>
     <input type="email" id="email" placeholder="Email" style="width:150px; margin-bottom:5px;"><br>
-    <input type="password" id="password" placeholder="Пароль" style="width:150px; margin-bottom:5px;"><br>
-    <button id="login-btn" style="width:160px; padding:5px;">Войти</button>
-    <button id="logout-btn" style="width:160px; padding:5px; display:none;">Выйти</button>
+    <input type="password" id="password" placeholder="Password" style="width:150px; margin-bottom:5px;"><br>
+    <button id="login-btn" style="width:160px; padding:5px;">Login</button>
+    <button id="logout-btn" style="width:160px; padding:5px; display:none;">Logout</button>
     <p id="login-status" style="margin-top:5px; color:green; font-size:12px;"></p>
   </div>
-
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
@@ -373,7 +370,7 @@ button:active {
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // Карта
+    // Map initialization
     const map = L.map("map").setView([39.66, 66.97], 13);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
@@ -382,40 +379,35 @@ button:active {
     let addMode = false, deleteMode = false;
     let userLocation = null, userMarker = null, routingControl = null;
 
-    // --- Метки ---
-    // --- Метки ---
+    // --- Add hotel markers ---
     onChildAdded(hotelsRef, (snapshot) => {
       const id = snapshot.key;
       const hotel = snapshot.val();
 
-      // Основной маркер
       const marker = L.marker([hotel.lat, hotel.lon]).addTo(map)
         .bindPopup(`
           <b>${hotel.name}</b><br>${hotel.description || "—"}<br>
-          <button onclick="window.routeTo(${hotel.lat}, ${hotel.lon})">Маршрут</button>
+          <button onclick="window.routeTo(${hotel.lat}, ${hotel.lon})">Route</button>
         `);
 
-      // Подпись над маркером
       const label = L.divIcon({
         className: "hotel-label",
         html: `<span>${hotel.name}</span>`,
         iconSize: [100, 20],
-        iconAnchor: [50, 30] // чтобы было над точкой
+        iconAnchor: [50, 30]
       });
 
       const labelMarker = L.marker([hotel.lat, hotel.lon], {
         icon: label,
-        interactive: false // чтобы подпись не перекрывала клики
+        interactive: false
       }).addTo(map);
 
-      // При удалении
       marker.on("click", () => {
-        if (deleteMode && confirm(`Удалить ${hotel.name}?`)) {
+        if (deleteMode && confirm(`Delete ${hotel.name}?`)) {
           remove(ref(db, "hotels/" + id));
         }
       });
 
-      // Сохраняем оба маркера
       hotelMarkers[id] = { main: marker, label: labelMarker };
     });
 
@@ -428,18 +420,17 @@ button:active {
       }
     });
 
-
-    // Добавление отеля
+    // Add hotel
     document.getElementById("addBtn").onclick = () => {
-      if (!currentUser) { alert("Войдите как администратор."); return; }
+      if (!currentUser) { alert("Please log in as administrator."); return; }
       addMode = true;
       deleteMode = false;
-      alert("Кликните на карту, чтобы добавить отель.");
+      alert("Click on the map to add a hotel.");
     };
 
     map.on("click", (e) => {
       if (!addMode) return;
-      const name = prompt("Название отеля:");
+      const name = prompt("Hotel name:");
       if (name) {
         push(hotelsRef, { name, lat: e.latlng.lat, lon: e.latlng.lng, description: "—" });
       }
@@ -447,13 +438,13 @@ button:active {
     });
 
     document.getElementById("delBtn").onclick = () => {
-      if (!currentUser) { alert("Войдите как администратор."); return; }
+      if (!currentUser) { alert("Please log in as administrator."); return; }
       deleteMode = true;
       addMode = false;
-      alert("Кликните по отелю, чтобы удалить его.");
+      alert("Click on a hotel to delete it.");
     };
 
-    // Поиск
+    // Search
     document.getElementById("searchBtn").onclick = () => {
       const query = document.getElementById("searchInput").value.toLowerCase();
       onValue(hotelsRef, (snapshot) => {
@@ -464,94 +455,87 @@ button:active {
         });
         if (found) {
           map.setView([found.lat, found.lon], 16);
-        } else alert("Отель не найден");
+        } else alert("Hotel not found");
       });
     };
 
-    // Геолокация
-    // === ГЕОЛОКАЦИЯ ПОСЛЕ ВХОДА ===
-const personIcon = L.icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-  iconSize: [40, 40],
-  iconAnchor: [20, 40]
-});
+    // Geolocation tracking
+    const personIcon = L.icon({
+      iconUrl: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+      iconSize: [40, 40],
+      iconAnchor: [20, 40]
+    });
 
+    let firstLocation = true;
+    let geoWatchId = null;
+    let currentDestination = null;
 
-let firstLocation = true;
-
-// Функция запуска геолокации
-function startGeolocationTracking() {
-  if (!navigator.geolocation) {
-    alert("Ваш браузер не поддерживает геолокацию.");
-    return;
-  }
-
-  geoWatchId = navigator.geolocation.watchPosition(
-    (pos) => {
-      const latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
-      userLocation = latlng;
-
-      // Если маркер ещё не создан — создаём его
-      if (!userMarker) {
-        userMarker = L.marker(latlng, { icon: personIcon })
-          .addTo(map)
-          .bindPopup("Вы здесь")
-          .openPopup();
-      } else {
-        // Обновляем позицию плавно
-        userMarker.setLatLng(latlng);
+    function startGeolocationTracking() {
+      if (!navigator.geolocation) {
+        alert("Your browser does not support geolocation.");
+        return;
       }
 
-      // При первом определении — ищем ближайший отель и строим маршрут
-      if (firstLocation) {
-        map.setView(latlng, 14);
+      geoWatchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+          userLocation = latlng;
 
-        onValue(hotelsRef, (snapshot) => {
-          let nearest = null;
-          let minDist = Infinity;
-
-          snapshot.forEach((child) => {
-            const hotel = child.val();
-            const dist = getDistance(latlng.lat, latlng.lng, hotel.lat, hotel.lon);
-            if (dist < minDist) {
-              minDist = dist;
-              nearest = hotel;
-            }
-          });
-
-          if (nearest) {
-            window.routeTo(nearest.lat, nearest.lon);
-            L.popup()
-              .setLatLng([nearest.lat, nearest.lon])
-              .setContent(
-                `<b>Ближайший отель:</b><br>${nearest.name}<br>📍 Расстояние: ${Math.round(minDist)} м`
-              )
-              .openOn(map);
+          if (!userMarker) {
+            userMarker = L.marker(latlng, { icon: personIcon })
+              .addTo(map)
+              .bindPopup("You are here")
+              .openPopup();
+          } else {
+            userMarker.setLatLng(latlng);
           }
-        });
 
-        firstLocation = false;
+          if (firstLocation) {
+            map.setView(latlng, 14);
+
+            onValue(hotelsRef, (snapshot) => {
+              let nearest = null;
+              let minDist = Infinity;
+
+              snapshot.forEach((child) => {
+                const hotel = child.val();
+                const dist = getDistance(latlng.lat, latlng.lng, hotel.lat, hotel.lon);
+                if (dist < minDist) {
+                  minDist = dist;
+                  nearest = hotel;
+                }
+              });
+
+              if (nearest) {
+                window.routeTo(nearest.lat, nearest.lon);
+                L.popup()
+                  .setLatLng([nearest.lat, nearest.lon])
+                  .setContent(
+                    `<b>Nearest hotel:</b><br>${nearest.name}<br>📍 Distance: ${Math.round(minDist)} m`
+                  )
+                  .openOn(map);
+              }
+            });
+
+            firstLocation = false;
+          }
+        },
+        (err) => {
+          alert("Geolocation error: " + err.message);
+        },
+        { enableHighAccuracy: true, maximumAge: 1000 }
+      );
+    }
+
+    function stopGeolocationTracking() {
+      if (geoWatchId !== null) {
+        navigator.geolocation.clearWatch(geoWatchId);
+        geoWatchId = null;
       }
-    },
-    (err) => {
-      alert("Ошибка определения местоположения: " + err.message);
-    },
-    { enableHighAccuracy: true, maximumAge: 1000 }
-  );
-}
+    }
 
-// Останавливаем геолокацию при выходе
-function stopGeolocationTracking() {
-  if (geoWatchId !== null) {
-    navigator.geolocation.clearWatch(geoWatchId);
-    geoWatchId = null;
-  }
-}
-
-
-    // --- Функция для вычисления расстояния (в метрах) ---
     function getDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371000; // радиус Земли в метрах
+      const R = 6371000;
       const toRad = (deg) => deg * Math.PI / 180;
       const dLat = toRad(lat2 - lat1);
       const dLon = toRad(lon2 - lon1);
@@ -562,154 +546,123 @@ function stopGeolocationTracking() {
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
+    window.routeTo = (lat, lon) => {
+      currentDestination = L.latLng(lat, lon);
 
-   let geoWatchId = null;
-let currentDestination = null;
+      if (!userLocation) return alert("Determine your location first.");
+      if (routingControl) map.removeControl(routingControl);
 
-window.routeTo = (lat, lon) => {
-  currentDestination = L.latLng(lat, lon);
+      routingControl = L.Routing.control({
+        waypoints: [userLocation, currentDestination],
+        router: L.Routing.osrmv1({
+          language: 'en',
+          profile: 'driving'
+        }),
+        lineOptions: { styles: [{ color: "#1d4ed8", weight: 5 }] },
+        addWaypoints: false,
+        routeWhileDragging: false,
+        draggableWaypoints: false,
+        fitSelectedRoutes: true,
+        createMarker: () => null
+      }).addTo(map);
 
-  if (!userLocation) return alert("Определите ваше местоположение.");
-  if (routingControl) map.removeControl(routingControl);
+      routingControl.on('routesfound', (e) => {
+        const route = e.routes[0];
+        const summary = route.summary;
 
-  routingControl = L.Routing.control({
-    waypoints: [userLocation, currentDestination],
-    router: L.Routing.osrmv1({
-      language: 'ru',
-      profile: 'driving'
-    }),
-    lineOptions: { styles: [{ color: "#1d4ed8", weight: 5 }] },
-    addWaypoints: false,
-    routeWhileDragging: false,
-    draggableWaypoints: false,
-    fitSelectedRoutes: true,
-    createMarker: () => null
-  }).addTo(map);
-
-  routingControl.on('routesfound', (e) => {
-    const route = e.routes[0];
-    const summary = route.summary;
-
-    document.getElementById("nav-distance").textContent =
-      (summary.totalDistance / 1000).toFixed(2) + " км";
-    document.getElementById("nav-time").textContent =
-      Math.round(summary.totalTime / 60) + " мин";
-
-    var isMobile = window.innerWidth < 768;
-
-    if (isMobile) {
-    // Показываем только первую инструкцию поворота
-    document.getElementById("nav-instruction").textContent =
-      route.instructions?.[0]?.text || "Начинаем движение";
-    } else {
-    // Показываем полную инструкцию (можно заменить на другую логику)
-    document.getElementById("nav-instruction").textContent =
-      route.instructions?.[0]?.text || "Начинаем движение";
-    }
-
-    // Отслеживание движения
-    if (geoWatchId) navigator.geolocation.clearWatch(geoWatchId);
-
-    geoWatchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
-        userLocation = latlng;
-        userMarker?.setLatLng(latlng);
-
-        const dest = currentDestination;
-        const distToDest = getDistance(latlng.lat, latlng.lng, dest.lat, dest.lng);
         document.getElementById("nav-distance").textContent =
-          (distToDest / 1000).toFixed(2) + " км";
+          (summary.totalDistance / 1000).toFixed(2) + " km";
+        document.getElementById("nav-time").textContent =
+          Math.round(summary.totalTime / 60) + " min";
 
-        if (distToDest < 30) {
-          document.getElementById("nav-instruction").textContent = "🎉 Вы прибыли в пункт назначения!";
-          document.getElementById("nav-time").textContent = "0 мин";
-          navigator.geolocation.clearWatch(geoWatchId);
-          return;
-        }
+        document.getElementById("nav-instruction").textContent =
+          route.instructions?.[0]?.text || "Start driving";
 
-        // Проверяем, не отклонился ли пользователь
-        const nearestPoint = route.coordinates.reduce((min, p) => {
-          const d = getDistance(latlng.lat, latlng.lng, p.lat, p.lng);
-          return d < min.dist ? { point: p, dist: d } : min;
-        }, { point: route.coordinates[0], dist: Infinity });
+        if (geoWatchId) navigator.geolocation.clearWatch(geoWatchId);
 
-        if (nearestPoint.dist > 50) {
-          console.log("🚗 Пользователь отклонился от маршрута — перестраиваем...");
-          // Перестроить маршрут от новой позиции
-          routingControl.setWaypoints([latlng, currentDestination]);
-        }
-      },
-      (err) => console.warn("Ошибка геолокации:", err),
-      { enableHighAccuracy: true, maximumAge: 1000 }
-    );
-  });
+        geoWatchId = navigator.geolocation.watchPosition(
+          (pos) => {
+            const latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+            userLocation = latlng;
+            userMarker?.setLatLng(latlng);
 
-  routingControl.on('routeselected', (e) => {
-    const route = e.route;
-    const first = route.instructions?.[0];
-    if (first) {
-      document.getElementById("nav-instruction").textContent = first.text;
-    }
-  });
-};
+            const dest = currentDestination;
+            const distToDest = getDistance(latlng.lat, latlng.lng, dest.lat, dest.lng);
+            document.getElementById("nav-distance").textContent =
+              (distToDest / 1000).toFixed(2) + " km";
 
+            if (distToDest < 30) {
+              document.getElementById("nav-instruction").textContent = "🎉 You have arrived!";
+              document.getElementById("nav-time").textContent = "0 min";
+              navigator.geolocation.clearWatch(geoWatchId);
+              return;
+            }
 
+            const nearestPoint = route.coordinates.reduce((min, p) => {
+              const d = getDistance(latlng.lat, latlng.lng, p.lat, p.lng);
+              return d < min.dist ? { point: p, dist: d } : min;
+            }, { point: route.coordinates[0], dist: Infinity });
 
-    // Авторизация
+            if (nearestPoint.dist > 50) {
+              console.log("🚗 Off route detected — recalculating...");
+              routingControl.setWaypoints([latlng, currentDestination]);
+            }
+          },
+          (err) => console.warn("Geolocation error:", err),
+          { enableHighAccuracy: true, maximumAge: 1000 }
+        );
+      });
+    };
+
+    // Authentication
     let currentUser = null;
     const loginBtn = document.getElementById("login-btn");
     const logoutBtn = document.getElementById("logout-btn");
     const statusEl = document.getElementById("login-status");
+    const controlButtons = document.querySelector('.control-buttons');
 
     loginBtn.onclick = () => {
       const email = document.getElementById("email").value;
       const pass = document.getElementById("password").value;
       signInWithEmailAndPassword(auth, email, pass)
-        .then(() => statusEl.textContent = "✅ Вход выполнен")
-        .catch(err => statusEl.textContent = "❌ Ошибка: " + err.message);
+        .then(() => statusEl.textContent = "✅ Logged in successfully")
+        .catch(err => statusEl.textContent = "❌ Error: " + err.message);
     };
 
     logoutBtn.onclick = () => signOut(auth);
 
-    const controlButtons = document.querySelector('.control-buttons');
-    
     onAuthStateChanged(auth, (user) => {
-  currentUser = user;
-  if (user) {
-    loginBtn.style.display = "none";
-    logoutBtn.style.display = "inline-block";
-    document.getElementById("email").style.display = "none";
-    document.getElementById("password").style.display = "none";
-    statusEl.textContent = `Вы вошли как ${user.email}`;
+      currentUser = user;
+      if (user) {
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        document.getElementById("email").style.display = "none";
+        document.getElementById("password").style.display = "none";
+        statusEl.textContent = `Logged in as ${user.email}`;
+        controlButtons.style.display = "flex";
+      } else {
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        document.getElementById("email").style.display = "inline-block";
+        document.getElementById("password").style.display = "inline-block";
+        statusEl.textContent = "";
+        controlButtons.style.display = "none";
+      }
+    });
 
-     controlButtons.style.display = "flex";
-  } else {
-    loginBtn.style.display = "inline-block";
-    logoutBtn.style.display = "none";
-    document.getElementById("email").style.display = "inline-block";
-    document.getElementById("password").style.display = "inline-block";
-    statusEl.textContent = "";
+    if (window.innerWidth <= 767) {
+      const registerBtn = document.querySelector('.login-container');
+      const rotateInfo = document.querySelector('.info');
+      const navPanel = document.getElementById('nav-panel');
 
-    controlButtons.style.display = "none";
-  }
-});
+      if (registerBtn) registerBtn.style.display = 'none';
+      if (rotateInfo) rotateInfo.style.display = 'none';
+      if (navPanel) navPanel.style.display = 'none'; 
+    }
 
-if (window.innerWidth <= 767) {
-  const registerBtn = document.querySelector('.login-container');
-  const rotateInfo = document.querySelector('.info');
-  const navPanel = document.getElementById('nav-panel');
-
-  if (registerBtn) registerBtn.style.display = 'none';
-  if (rotateInfo) rotateInfo.style.display = 'none';
-  if (navPanel) navPanel.style.display = 'none'; 
-}
-
-
-// 🛰️ Сразу при загрузке запрашиваем геолокацию
-startGeolocationTracking();
-
-
+    // 🛰 Start geolocation automatically
+    startGeolocationTracking();
   </script>
 </body>
+
 </html>
