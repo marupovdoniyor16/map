@@ -50,7 +50,7 @@
 
 .control-buttons {
   position: absolute;
-  bottom: 90px;
+  bottom: 120px;
   left: 10px;
   z-index: 1001;
   display: flex;
@@ -124,7 +124,7 @@ button:active {
 
 .control-buttons {
       position: absolute;
-      bottom: 90px;
+      bottom: 140px;
       left: 20px;
       z-index: 1001;
       display: flex;
@@ -629,6 +629,8 @@ button:active {
         .catch(err => statusEl.textContent = "❌ Error: " + err.message);
     };
 
+    
+
     logoutBtn.onclick = () => signOut(auth);
 
     onAuthStateChanged(auth, (user) => {
@@ -662,7 +664,81 @@ button:active {
 
     // 🛰 Start geolocation automatically
     startGeolocationTracking();
+
+    // 📋 Панель со списком отелей (мобильная кнопка)
+const hotelListPanel = document.createElement("div");
+hotelListPanel.id = "hotel-list-panel";
+hotelListPanel.style.cssText = `
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  max-height: 60%;
+  background: white;
+  border-top: 2px solid #1d4ed8;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
+  padding: 10px;
+  box-shadow: 0 -3px 8px rgba(0,0,0,0.2);
+`;
+hotelListPanel.innerHTML = `<h3 style="text-align:center;margin:5px 0;">🏨 Список отелей</h3><div id="hotel-list"></div>`;
+document.body.appendChild(hotelListPanel);
+
+const showHotelsBtn = document.createElement("button");
+showHotelsBtn.id = "show-hotels-btn";
+showHotelsBtn.textContent = "📋 Показать отели";
+showHotelsBtn.style.cssText = `
+  position: fixed;
+  bottom: 20px; right: 20px;
+  background: #1d4ed8;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  z-index: 1100;
+`;
+document.body.appendChild(showHotelsBtn);
+
+const hotelListDiv = document.getElementById("hotel-list");
+
+onValue(hotelsRef, (snapshot) => {
+  hotelListDiv.innerHTML = "";
+  snapshot.forEach((child) => {
+    const h = child.val();
+    const el = document.createElement("div");
+    el.style.cssText = "border-bottom:1px solid #ccc;padding:6px;";
+    el.innerHTML = `
+      <b>${h.name}</b><br>
+      ${h.description || "—"}<br>
+      <button style="background:#1d4ed8;color:white;border:none;padding:4px 8px;border-radius:5px;margin-top:4px;"
+        onclick="window.routeTo(${h.lat}, ${h.lon});toggleHotelList(false)">
+        🗺 Маршрут
+      </button>
+    `;
+    hotelListDiv.appendChild(el);
+  });
+});
+
+function toggleHotelList(show) {
+  hotelListPanel.style.display = show ? "block" : "none";
+  showHotelsBtn.textContent = show ? "❌ Закрыть" : "📋 Показать отели";
+}
+
+showHotelsBtn.onclick = () => {
+  const isVisible = hotelListPanel.style.display === "block";
+  toggleHotelList(!isVisible);
+};
+
   </script>
+  <!-- 📋 Панель со списком отелей -->
+
+
+<!-- 📱 Кнопка для открытия списка -->
+
+
+
+
 </body>
 
 </html>
